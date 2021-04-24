@@ -1,21 +1,20 @@
 from song import Song
 import requests
+import time
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+options = Options()
+options.add_argument('--headless')
+options.add_argument('--no-sandbox')
+options.add_argument('--disable-gpu')
 
 # Vars
-CSV = "sample.csv"
+CSV = "music_src.csv"
 songs = []
-song = None
-
 
 def main():
-	# Open a webpage
-    # os.system("open \"\" https://www.shazam.com/myshazam")
-	# pyautogui.moveTo(1420, 270)
-	# time.sleep(2.5)
-	# for i in range(0, 17):
-	# 	fullscreen = pyautogui.screenshot('/Users/' + getpass.getuser() + '/Downloads/fullscreen.png')
-		
-	# 	song_separate('/Users/' + getpass.getuser() + '/Downloads/fullscreen.png', firstRun=first_run)
 
     file = open(CSV, "r")
 
@@ -23,14 +22,20 @@ def main():
         song = Song(line)
         songs.append(song)
 
-        # print("{0} - {1}".format(song.artist, song.title))
-    print(songs)
-
     file.close()
 
-    # for x in range(len(songs)):
-    #     print(songs[x].title)
-    #     x + 1
+    driver = webdriver.Chrome(options=options)
+
+    for song in songs:
+        
+        driver.get(song.shazamLink)
+        time.sleep(4)
+        html = driver.page_source
+        song._get_shazam_attrs(html)
+
+        print(song)
+
+    driver.quit()
 
 
 if __name__ == '__main__':
