@@ -8,9 +8,12 @@ Automated workflow to download Shazam library as MP3 files complete with the fol
 * Album Art
 
 ## INSTALLATION
-`brew install chromedriver`
-`pip install -r requirements.txt`
 
+```
+brew install chromedriver
+brew install ffmpeg
+pip install -r requirements.txt
+```
 
 ## USAGE
 

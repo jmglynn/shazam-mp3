@@ -1,5 +1,6 @@
 import os
 import time
+import eyed3
 import getpass
 import requests
 import youtube_dl
