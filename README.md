@@ -1,23 +1,20 @@
-# shazam-mp3
-Automated workflow to download Shazam library as MP3 files
+# SHAZAM-MP3
 
-URL: https://www.shazam.com/track/<TrackKey>
+Automated workflow to download Shazam library as MP3 files complete with the following embedded metadata:
+* Artist
+* Title
+* Album (when available)
+* Genre
+* Album Art
 
-
-WHEN YOUTUBE PRESENT:
-
-X-Path: 		//*[@id="yt-videocontainer"]
-Full X-Path: 	/html/body/div[4]/div/main/div/div[3]/div[1]/div[2]/article/div/div
-JS Path:		document.querySelector("#yt-videocontainer")
-Selector: 		#yt-videocontainer
-
-data-href="<youtubeLink>"
-data-shz-dynamic-beacon="providername=youtube"
+## INSTALLATION
+`brew install chromedriver`
+`pip install -r requirements.txt`
 
 
-Artist - Title div
-Full X-Path:    /html/body/div[4]/div/main/div/div[3]/div[1]/div[2]/article/div/div/div[2]/div
-JS Path:        document.querySelector("#yt-videocontainer > div.info > div")
+## USAGE
 
 
 
+#### Usage of Youtube-DL on command line
+`$ youtube-dl --extract-audio --add-metadata --xattrs --embed-thumbnail --audio-quality 0 --audio-format mp3 URL`
