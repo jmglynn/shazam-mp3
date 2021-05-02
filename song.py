@@ -39,7 +39,7 @@ class Song:
             self.youtubeLink = None
 
     def _get_album_art_link(self, soup, html):
-        self.albumArtLink = soup.find('img')['src'] # .replace('400x400', '1000x1000')
+        self.albumArtLink = soup.find('img')['src']#.replace('400x400', '1000x1000')
         if self.albumArtLink == "/resources/35fb0bf7dff89be0cfc82701544ec0c6f2b6fb75/nocoverart.jpg":
             self.albumArtLink = None
             print(f"NO ALBUM ART FOR {self.id}. {self.artist} - {self.title}")
@@ -53,7 +53,9 @@ class Song:
 
     def _get_album(self, soup, html):
         try:
-            self.album = soup.find('div', {'class': 'playlist-title ellip'}).text 
+            self.album = soup.find('div', {'class': 'playlist-title ellip'}).text
+            if self.album.endswith(" - Single"):
+                self.album = self.album.replace(" - Single", "")
         except Exception:
             print(f"NO ALBUM FOR {self.id}. {self.artist} - {self.title}")
             self.album = None 

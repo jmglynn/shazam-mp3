@@ -12,7 +12,7 @@ from selenium.webdriver.chrome.options import Options
 from song import Song
 
 options = Options()
-# options.add_argument('--headless')
+options.add_argument('--headless')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-gpu')
 
