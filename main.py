@@ -28,6 +28,7 @@ def download(songs_list: list):
 
     ydl_opts = {
         "format": "bestaudio/best",
+        "outtmpl": "%(title)s.%(ext)s",
         "postprocessors": [{
             "key": "FFmpegExtractAudio",
             "preferredcodec": "mp3",
@@ -35,13 +36,13 @@ def download(songs_list: list):
             }]
     }
 
-
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(songs[0].youtubeLink, download=True)
-        filename = ydl.prepare_filename(info)[:-5] + ".mp3"
-    
+    for song in songs:
+        if song.youtubeLink is not None:
+            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(song.youtubeLink, download=True)
+                filename = ydl.prepare_filename(info)[:-5] + ".mp3"
+            song.filePath = dir + filename
     os.chdir(pwd)
-    return str(dir) + str(filename)   
 
 
 def main():
@@ -54,7 +55,7 @@ def main():
     driver = webdriver.Chrome(options=options)
     for song in songs:
         driver.get(song.shazamLink)
-        time.sleep(1)
+        time.sleep(5)
         html = driver.page_source
         song._set_shazam_attrs(html)
         print(song)

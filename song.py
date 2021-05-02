@@ -21,7 +21,7 @@ class Song:
 
 
     def __repr__(self):
-        toString = self.id + ".\t" + self.artist + " - " + self.title + " (" + str(self.album) + ")\nShazam:\t" + self.shazamLink + "\nYT:\t" + self.youtubeLink + "\nCover:\t" + str(self.albumArtLink) + "\n\n"
+        toString = self.id + ".\t" + self.artist + " - " + self.title + " (" + str(self.album) + ")\nShazam:\t" + str(self.shazamLink) + "\nYT:\t" + str(self.youtubeLink) + "\nCover:\t" + str(self.albumArtLink) + "\n\n"
         return toString 
         
     def _set_shazam_attrs(self, html):
@@ -32,8 +32,11 @@ class Song:
         self._get_album(soup, html)
 
     def _get_youtube_link(self, soup, html):
-        print(soup.find('div', {'class': 'video-container'})['data-href'])
-        self.youtubeLink = soup.find('div', {'class': 'video-container'})['data-href']
+        try:
+            self.youtubeLink = soup.find('div', {'class': 'video-container'})['data-href']
+        except Exception:
+            print(f"NO YOUTUBE LINK FOR {self.id}. {self.artist} - {self.title}")
+            self.youtubeLink = None
 
     def _get_album_art_link(self, soup, html):
         self.albumArtLink = soup.find('img')['src'].replace('400x400', '1000x1000')
