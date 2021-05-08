@@ -16,6 +16,8 @@ options.add_argument('--headless')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-gpu')
 
+eyed3.log.setLevel("ERROR")
+
 if len(sys.argv) < 2:
     IN = "music_src.csv"
 else:
@@ -34,6 +36,7 @@ def download_with_metadata():
     ydl_opts = {
         "format": "bestaudio/best",
         "outtmpl": "%(title)s.%(ext)s",
+        "quiet": True,
         "postprocessors": [{
             "key": "FFmpegExtractAudio",
             "preferredcodec": "mp3",
@@ -43,6 +46,7 @@ def download_with_metadata():
 
     for song in songs:
         if song.youtubeLink is not None:
+            print(f"DOWNLOADING: {song}")
             with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(song.youtubeLink, download=True)
                 filename = ydl.prepare_filename(info)
@@ -65,6 +69,8 @@ def download_with_metadata():
                 if song.albumArtLink is not None:
                     mp3.tag.images.set(3, requests.get(song.albumArtLink).content, 'image/jpeg')
                 mp3.tag.save(version=(2,3,0))
+        else:
+            print(f"SKIPPING: {song}")
 
     os.chdir(pwd)
 
@@ -77,13 +83,13 @@ def main():
     inputFile.close()
 
     # Webscraping of each song's Shazam page to gather all necessary info and related links
+    print("\nGathering information about songs...\n\n")
     driver = webdriver.Chrome(options=options)
     for song in songs:
         driver.get(song.shazamLink)
         time.sleep(2)
         html = driver.page_source
         song._set_shazam_attrs(html)
-        print(song)
     driver.quit()
 
     # Download each track from its Youtube link and add all meta fields/album art
@@ -94,6 +100,8 @@ def main():
     for song in songs:
         outputFile.write(f"{song.id},{song.artist},{song.title},{song.album},{song.genre},{song.albumArtLink},{song.youtubeLink}\n")
     outputFile.close()
+
+    print("FINISHED!")
 
 if __name__ == "__main__":
 	main()
