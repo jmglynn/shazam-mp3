@@ -21,7 +21,11 @@ class Song:
         self.albumArtLink = None
 
     def __repr__(self):
-        toString = f"{self.id}. {self.artist} - {self.title} ({str(self.album)}) / {str(self.genre)}\nShazam:\t{str(self.shazamLink)}\nYT:\t{str(self.youtubeLink)}\nCover:\t{str(self.albumArtLink)}\n\n"
+        toString = (
+            f"{self.id}. {self.artist} - {self.title} ({str(self.album)}) / "
+            f"{str(self.genre)}\nShazam:\t{str(self.shazamLink)}\nYT:\t"
+            f"{str(self.youtubeLink)}\nCover:\t{str(self.albumArtLink)}\n\n"
+        )
         return toString
 
     def _set_shazam_attrs(self, html):
