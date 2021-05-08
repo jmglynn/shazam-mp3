@@ -12,9 +12,9 @@ from selenium.webdriver.chrome.options import Options
 from song import Song
 
 options = Options()
-options.add_argument('--headless')
-options.add_argument('--no-sandbox')
-options.add_argument('--disable-gpu')
+options.add_argument("--headless")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-gpu")
 
 eyed3.log.setLevel("ERROR")
 
@@ -37,11 +37,13 @@ def download_with_metadata():
         "format": "bestaudio/best",
         "outtmpl": "%(title)s.%(ext)s",
         "quiet": True,
-        "postprocessors": [{
-            "key": "FFmpegExtractAudio",
-            "preferredcodec": "mp3",
-            "preferredquality": "192",
-        }]
+        "postprocessors": [
+            {
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "mp3",
+                "preferredquality": "192",
+            }
+        ],
     }
 
     for song in songs:
@@ -59,7 +61,7 @@ def download_with_metadata():
             # Append all metadata fields and album art to the track
             if song.filePath is not None:
                 mp3 = eyed3.load(song.filePath)
-                if (mp3.tag is None):
+                if mp3.tag is None:
                     mp3.initTag()
                 mp3.tag.title = song.title
                 mp3.tag.artist = song.artist
@@ -67,17 +69,20 @@ def download_with_metadata():
                 mp3.tag.album = song.album
                 mp3.tag.genre = song.genre
                 if song.albumArtLink is not None:
-                    mp3.tag.images.set(3, requests.get(song.albumArtLink).content, 'image/jpeg')
-                mp3.tag.save(version=(2,3,0))
+                    mp3.tag.images.set(
+                        3, requests.get(song.albumArtLink).content, "image/jpeg"
+                    )
+                mp3.tag.save(version=(2, 3, 0))
         else:
             print(f"SKIPPING: {song}")
 
     os.chdir(pwd)
 
+
 def main():
     # This opens the CSV export of your Shazam library
     inputFile = open(IN, "r")
-    for line in inputFile:    
+    for line in inputFile:
         song = Song(line)
         songs.append(song)
     inputFile.close()
@@ -98,10 +103,13 @@ def main():
     # A reduced CSV with all the pertinent metadata we care about for tracking purposes
     outputFile = open(OUT, "w")
     for song in songs:
-        outputFile.write(f"{song.id},{song.artist},{song.title},{song.album},{song.genre},{song.albumArtLink},{song.youtubeLink}\n")
+        outputFile.write(
+            f"{song.id},{song.artist},{song.title},{song.album},{song.genre},{song.albumArtLink},{song.youtubeLink}\n"
+        )
     outputFile.close()
 
     print("FINISHED!")
 
+
 if __name__ == "__main__":
-	main()
+    main()
