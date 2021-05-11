@@ -16,7 +16,6 @@ class Song:
 
         self.genre = None
         self.album = None
-        self.albumArt = None
         self.filePath = None
 
         self.shazamLink = fields[4]
@@ -27,7 +26,7 @@ class Song:
         toString = (
             f"{self.id}. {self.artist} - {self.title} ({str(self.album)}) / "
             f"{str(self.genre)}\nShazam:\t{str(self.shazamLink)}\nYT:\t"
-            f"{str(self.youtubeLink)}\nCover:\t{str(self.albumArtLink)}\n\n"
+            f"{str(self.youtubeLink)}\nCover:\t{str(self.albumArtLink)}\n"
         )
         return toString
 

@@ -24,10 +24,9 @@ if len(sys.argv) < 2:
 else:
     IN = sys.argv[1]
 OUT = "output.csv"
-songs = []
 
 
-def download_with_metadata():
+def download_with_metadata(songs: list):
     pwd = os.getcwd()
     dir = "/Users/" + getpass.getuser() + "/Desktop/mp3_downloads/"
     if not os.path.exists(dir):
@@ -49,7 +48,7 @@ def download_with_metadata():
 
     for song in songs:
         if song.youtubeLink is not None:
-            print(f"DOWNLOADING: {song}")
+            print(f"\nDOWNLOADING: {song}")
             with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(song.youtubeLink, download=True)
                 filename = ydl.prepare_filename(info)
@@ -86,6 +85,7 @@ def is_header(line):
 
 def main():
     ts = time.time()
+    songs = []
 
     # Open the Shazam library CSV (skipping the header lines) and create a Song for each line
     with open(IN, "r") as f:
@@ -105,7 +105,7 @@ def main():
     driver.quit()
 
     # Download each track from its Youtube link and add all meta fields/album art
-    download_with_metadata()
+    download_with_metadata(songs)
 
     # A reduced CSV with all the pertinent metadata we care about for tracking purposes
     outputFile = open(OUT, "w")
