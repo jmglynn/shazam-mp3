@@ -85,7 +85,6 @@ def main():
     # This opens the CSV export of your Shazam library
     with open(IN, "r") as f:
         lines = f.readlines()
-        print(lines)
     for line in lines:
         song = Song(line)
         songs.append(song)
