@@ -83,11 +83,13 @@ def main():
     ts = time.time()
 
     # This opens the CSV export of your Shazam library
-    inputFile = open(IN, "r")
-    for line in inputFile:
+    with open(IN, "r") as f:
+        lines = f.readlines()
+        print(lines)
+    for line in lines:
         song = Song(line)
         songs.append(song)
-    inputFile.close()
+    f.close()
 
     # Webscraping of each song's Shazam page to gather all necessary info and related links
     print("\nGathering information about songs...\n\n")
