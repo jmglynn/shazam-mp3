@@ -80,6 +80,8 @@ def download_with_metadata():
 
 
 def main():
+    ts = time.time()
+
     # This opens the CSV export of your Shazam library
     inputFile = open(IN, "r")
     for line in inputFile:
@@ -92,7 +94,7 @@ def main():
     driver = webdriver.Chrome(options=options)
     for song in songs:
         driver.get(song.shazamLink)
-        time.sleep(2)
+        time.sleep(5)
         html = driver.page_source
         song._set_shazam_attrs(html)
     driver.quit()
@@ -108,7 +110,7 @@ def main():
         )
     outputFile.close()
 
-    print("FINISHED!")
+    print(f"FINISHED in {time.time() - ts} seconds!")
 
 
 if __name__ == "__main__":

@@ -25,14 +25,18 @@ pip install -r requirements.txt
 
 ## Disclaimers
 * Sometimes metadata such as genre, album, or cover art are unavailable. In this case, the genre or album will be set to `None`, and no cover art will be added
-* Sometimes no Youtube link is present on the Shazam page, and therefore the song is skipped entirely and not downloaded
+* Sometimes no Youtube link is present on the Shazam page, so a query is made to youtube using the artist, title, and "audio" keyword to get an audio-only youtube link. If any errors arise in this process, the song is skipped entirely and not downloaded or processed any further
 * Messages are printed to the terminal when genre, album, album art, or the Youtube link cannot be discerned
 
 
 ## Personalization
-You can obviously look through the code and personalize any number of aspects, but some of the most likely are:
-* `main.py`: `IN` - global variable for the default input filepath containing the shazam csv entries to be processed
-* `main.py`: `ydl_opts` - customize download quality/codec/etc of the Youtube video (full documentation [here](https://github.com/ytdl-org/youtube-dl/blob/master/README.md#options))
-* `song.py`: `get_album_art_link` - customize the size of the cover art (default is 400x400)
+Obviously you can look through the code and personalize any number of aspects, but some may be of interest are:
+
+### `main.py`
+* `IN` - global variable for the default input filepath containing the shazam csv entries to be processed
+* `ydl_opts` - customize download quality/codec/etc of the Youtube video (full documentation [here](https://github.com/ytdl-org/youtube-dl/blob/master/README.md#options))
+* `OUT` - path to output file you want to create; what exactly is output can be customized at the end of `main()`
+
+### `song.py`
+* `get_album_art_link` - customize the size of the cover art (default is 400x400)
     * The code to do this is already there, just uncomment like so: `self.albumArtLink = soup.find('img')['src'].replace('400x400', '1000x1000')` where 1000x1000 is the custom size you want
-* `main.py`: `OUT` - path to output file you want to create; what exactly is output can be customized at the end of `main()`
