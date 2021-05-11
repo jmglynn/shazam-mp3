@@ -19,7 +19,7 @@ pip install -r requirements.txt
 1. Log into https://www.shazam.com/myshazam
 2. Click `DOWNLOAD CSV` on the right side (Only supported on desktop, Safari on iOS devices and Chrome on Android devices)
 3. Command usage: `python3 main.py [path_to_shazamlibrary.csv]` (path parameter is optional; will default to reading from `music_src.csv` if you want to paste your csv file/specific subset of entries there)
-4. An `mp3_downloads` directory will appear on your desktop with all the final files. You can then open them in your desired media player.
+4. An `mp3_downloads` directory will appear on your desktop with all the final files. You can then open them in your desired media player
 
 
 ## Disclaimers
