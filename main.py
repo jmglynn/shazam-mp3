@@ -7,6 +7,7 @@ import requests
 import youtube_dl
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from itertools import dropwhile
 from selenium.webdriver.chrome.options import Options
 
 from song import Song
@@ -79,15 +80,18 @@ def download_with_metadata():
     os.chdir(pwd)
 
 
+def is_header(line):
+    return line.startswith("Shazam Library") or line.startswith("Index,TagTime")
+
+
 def main():
     ts = time.time()
 
-    # This opens the CSV export of your Shazam library
+    # Open the Shazam library CSV (skipping the header lines) and create a Song for each line
     with open(IN, "r") as f:
-        lines = f.readlines()
-    for line in lines:
-        song = Song(line)
-        songs.append(song)
+        for line in dropwhile(is_header, f):
+            song = Song(line)
+            songs.append(song)
     f.close()
 
     # Webscraping of each song's Shazam page to gather all necessary info and related links
