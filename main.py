@@ -19,11 +19,23 @@ options.add_argument("--disable-gpu")
 
 eyed3.log.setLevel("ERROR")
 
-if len(sys.argv) < 2:
-    IN = "music_src.csv"
-else:
-    IN = sys.argv[1]
+ydl_opts = {
+    "format": "bestaudio/best",
+    "outtmpl": "%(title)s.%(ext)s",
+    "quiet": True,
+    "postprocessors": [
+        {
+            "key": "FFmpegExtractAudio",
+            "preferredcodec": "mp3",
+            "preferredquality": "192",
+        }
+    ],
+}
+
+IN = "music_src.csv"
 OUT = "output.csv"
+if len(sys.argv) == 2:
+    IN = sys.argv[1]
 
 
 def download_with_metadata(songs: list):
@@ -32,19 +44,6 @@ def download_with_metadata(songs: list):
     if not os.path.exists(dir):
         os.makedirs(dir)
     os.chdir(dir)
-
-    ydl_opts = {
-        "format": "bestaudio/best",
-        "outtmpl": "%(title)s.%(ext)s",
-        "quiet": True,
-        "postprocessors": [
-            {
-                "key": "FFmpegExtractAudio",
-                "preferredcodec": "mp3",
-                "preferredquality": "192",
-            }
-        ],
-    }
 
     for song in songs:
         if song.youtubeLink is not None:
@@ -99,7 +98,7 @@ def main():
     driver = webdriver.Chrome(options=options)
     for song in songs:
         driver.get(song.shazamLink)
-        time.sleep(5)
+        time.sleep(3)
         html = driver.page_source
         song._set_shazam_attrs(html)
     driver.quit()

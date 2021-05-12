@@ -31,11 +31,11 @@ pip install -r requirements.txt
 ## Personalization
 Obviously you can look through the code and personalize any number of aspects, but some may be of interest are:
 
-### `main.py`
+#### `main.py`
 * `IN` - global variable for the default input filepath containing the shazam csv entries to be processed
-* `ydl_opts` - customize download quality/codec/etc of the Youtube video (full documentation [here](https://github.com/ytdl-org/youtube-dl/blob/master/README.md#options))
 * `OUT` - path to output file you want to create; what exactly is output can be customized at the end of `main()`
+* `ydl_opts` - customize download quality/codec/etc of the Youtube video (full documentation [here](https://github.com/ytdl-org/youtube-dl/blob/master/README.md#options))
 
-### `song.py`
+#### `song.py`
 * `get_album_art_link` - customize the size of the cover art (default is 400x400)
     * The code to do this is already there, just uncomment like so: `self.albumArtLink = soup.find('img')['src'].replace('400x400', '1000x1000')` where 1000x1000 is the custom size you want
