@@ -6,7 +6,9 @@ import eyed3
 import urllib
 import getpass
 import requests
+import threading
 import youtube_dl
+from queue import Queue
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from itertools import dropwhile

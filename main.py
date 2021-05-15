@@ -4,7 +4,9 @@ import time
 import eyed3
 import getpass
 import requests
+import threading
 import youtube_dl
+from queue import Queue
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from itertools import dropwhile
@@ -36,6 +38,8 @@ IN = "music_src.csv"
 OUT = "output.csv"
 if len(sys.argv) == 2:
     IN = sys.argv[1]
+
+q = Queue()
 
 
 def download_with_metadata(songs: list):
@@ -82,6 +86,17 @@ def is_header(line):
     return line.startswith("Shazam Library") or line.startswith("Index,TagTime")
 
 
+def worker():
+    while True:
+        songs = []
+        song = q.get()
+        songs.append(song)
+        print(f"Working on {song}")
+        download_with_metadata(songs)
+        print(f"Finished {song}")
+        q.task_done()
+
+
 def main():
     ts = time.time()
     songs = []
@@ -96,15 +111,22 @@ def main():
     # Webscraping of each song's Shazam page to gather all necessary info and related links
     print("\nGathering information about songs...\n\n")
     driver = webdriver.Chrome(options=options)
+    # turn-on the worker thread
+    threading.Thread(target=worker, daemon=True).start()
     for song in songs:
         driver.get(song.shazamLink)
         time.sleep(3)
         html = driver.page_source
         song._set_shazam_attrs(html)
+        q.put(song)
+    print("All task requests sent\n", end="")
+    # block until all tasks are done
+    q.join()
+    print("All work completed")
     driver.quit()
 
     # Download each track from its Youtube link and add all meta fields/album art
-    download_with_metadata(songs)
+    # download_with_metadata(songs)
 
     # A reduced CSV with all the pertinent metadata we care about for tracking purposes
     outputFile = open(OUT, "w")
