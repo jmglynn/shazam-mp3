@@ -6,19 +6,17 @@ from bs4 import BeautifulSoup
 
 class Song:
     def __init__(self, line):
-
-        fields = line.split(",")
-        self.id = fields[0]
-        self.date = fields[1]
-        self.title = fields[2].replace('"', "")
-        self.artist = fields[3].replace('"', "")
-        self.trackId = fields[5]
+        self.id = line[0]
+        self.date = line[1]
+        self.title = line[2]
+        self.artist = line[3]
+        self.trackId = line[5]
 
         self.genre = None
         self.album = None
         self.filePath = None
 
-        self.shazamLink = fields[4]
+        self.shazamLink = line[4]
         self.youtubeLink = None
         self.albumArtLink = None
 
@@ -57,10 +55,7 @@ class Song:
 
     def _get_album_art_link(self, soup):
         self.albumArtLink = soup.find("img")["src"]  # .replace('400x400', '1000x1000')
-        if (
-            self.albumArtLink
-            == "/resources/35fb0bf7dff89be0cfc82701544ec0c6f2b6fb75/nocoverart.jpg"
-        ):
+        if self.albumArtLink.endswith("/nocoverart.jpg"):
             self.albumArtLink = None
             print(f"NO ALBUM ART FOR {self.id}. {self.artist} - {self.title}")
 

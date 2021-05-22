@@ -1,4 +1,5 @@
 import os
+import csv
 import sys
 import time
 import eyed3
@@ -79,10 +80,6 @@ def download_with_metadata(song: Song):
     os.chdir(pwd)
 
 
-def is_header(line):
-    return line.startswith("Shazam Library") or line.startswith("Index,TagTime")
-
-
 def youtube_threader(q):
     while True:
         song = q.get()
@@ -91,15 +88,20 @@ def youtube_threader(q):
 
 
 def main():
-    ts = time.time()
+    t0 = time.time()
     songs = []
     q = Queue()
 
     # Open the Shazam library CSV (skipping the header lines) and create a Song for each line
     with open(IN, "r") as f:
-        for line in dropwhile(is_header, f):
-            song = Song(line)
-            songs.append(song)
+        reader = csv.reader(f)
+        for line in reader:
+            try:
+                if len(line) == 6 and type(int(line[0])) == int:
+                    song = Song(line)
+                    songs.append(song)
+            except Exception:
+                pass
     f.close()
 
     # Webscraping of each song's Shazam page to gather all necessary info and related links
@@ -107,24 +109,27 @@ def main():
     driver = webdriver.Chrome(options=options)
     threading.Thread(target=youtube_threader, daemon=True, args=(q,)).start()
     for song in songs:
-        driver.get(song.shazamLink)
-        time.sleep(2)
-        html = driver.page_source
-        song._set_shazam_attrs(html)
-        # Queue each scraped song to start downloading from YT with meta/album art
-        q.put(song)
+        try:
+            driver.get(song.shazamLink)
+            time.sleep(2)
+            html = driver.page_source
+            song._set_shazam_attrs(html)
+            # Queue each scraped song to start downloading from YT with meta/album art
+            q.put(song)
+        except Exception as e:
+            print(f"ERROR: SKIPPING DOWNLOAD OF {song}\n{e}.")
     q.join()
     driver.quit()
 
     # A reduced CSV with all the pertinent metadata we care about for tracking purposes
-    outputFile = open(OUT, "w")
+    outputFile = open(OUT, "a")
     for song in songs:
         outputFile.write(
             f"{song.id},{song.artist},{song.title},{song.album},{song.genre},{song.albumArtLink},{song.youtubeLink}\n"
         )
     outputFile.close()
 
-    print(f"FINISHED in {time.time() - ts} seconds!")
+    print(f"FINISHED {len(songs)} songs in {time.time() - t0} seconds!")
 
 
 if __name__ == "__main__":
