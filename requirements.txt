@@ -1,16 +1,5 @@
-import os
-import re
-import csv
-import sys
-import time
-import eyed3
-import urllib
-import getpass
-import requests
-import threading
-import youtube_dl
-from queue import Queue
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from itertools import dropwhile
-from selenium.webdriver.chrome.options import Options
+bs4
+eyed3
+requests
+youtube_dl
+selenium

@@ -35,10 +35,8 @@ ydl_opts = {
     ],
 }
 
-IN = "music_src.csv"
+IN = sys.argv[1] if len(sys.argv) == 2 else "music_src.csv"
 OUT = "output.csv"
-if len(sys.argv) == 2:
-    IN = sys.argv[1]
 
 
 def download_with_metadata(song: Song):
@@ -59,7 +57,7 @@ def download_with_metadata(song: Song):
                 filename = filename[:-4] + ".mp3"
         song.filePath = dir + filename
 
-        # Append all metadata fields and album art to the track
+        # Embed all metadata fields and album art to the track
         if song.filePath is not None:
             mp3 = eyed3.load(song.filePath)
             if mp3.tag is None:
@@ -80,10 +78,12 @@ def download_with_metadata(song: Song):
     os.chdir(pwd)
 
 
-def youtube_threader(q):
+def youtube_threader(i, q):
     while True:
         song = q.get()
+        print(f"{i}: Downloading...")
         download_with_metadata(song)
+        print(f"{i} Finished!")
         q.task_done()
 
 
@@ -100,15 +100,22 @@ def main():
                 if len(line) == 6 and type(int(line[0])) == int:
                     song = Song(line)
                     songs.append(song)
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"Error creating song object from CSV line {line}: {e}")
     f.close()
 
     # Webscraping of each song's Shazam page to gather all necessary info and related links
     print("\nGathering information about songs...\n\n")
     driver = webdriver.Chrome(options=options)
-    threading.Thread(target=youtube_threader, daemon=True, args=(q,)).start()
     for song in songs:
+        threading.Thread(
+            target=youtube_threader,
+            daemon=True,
+            args=(
+                song.id,
+                q,
+            ),
+        ).start()
         try:
             driver.get(song.shazamLink)
             time.sleep(2)
