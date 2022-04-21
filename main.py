@@ -51,7 +51,9 @@ def download_with_metadata(song: Song):
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(song.youtubeLink, download=True)
             filename = ydl.prepare_filename(info)
-            if filename.endswith(".webm"):
+            if filename.endswith(".webm.part"):
+                filename = filename[:-10] + ".mp3"
+            elif filename.endswith(".webm"):
                 filename = filename[:-5] + ".mp3"
             else:
                 filename = filename[:-4] + ".mp3"
@@ -67,6 +69,8 @@ def download_with_metadata(song: Song):
             mp3.tag.album_artist = song.artist
             mp3.tag.album = song.album
             mp3.tag.genre = song.genre
+            if song.lyrics is not None:
+                mp3.tag.lyrics.set(song.lyrics)
             if song.albumArtLink is not None:
                 mp3.tag.images.set(
                     3, requests.get(song.albumArtLink).content, "image/jpeg"
@@ -82,7 +86,10 @@ def youtube_threader(i, q):
     while True:
         song = q.get()
         print(f"{i}: Downloading...")
-        download_with_metadata(song)
+        try:
+            download_with_metadata(song)
+        except Exception as e:
+            print(f"ERROR: COULDN'T DOWNLOAD {song}\n{e}")
         print(f"{i} Finished!")
         q.task_done()
 
@@ -91,6 +98,7 @@ def main():
     t0 = time.time()
     songs = []
     q = Queue()
+    num_threads = 10
 
     # Open the Shazam library CSV (skipping the header lines) and create a Song for each line
     with open(IN, "r") as f:
@@ -107,15 +115,17 @@ def main():
     # Webscraping of each song's Shazam page to gather all necessary info and related links
     print("\nGathering information about songs...\n\n")
     driver = webdriver.Chrome(options=options)
-    for song in songs:
+    for i in range(num_threads):
         threading.Thread(
             target=youtube_threader,
             daemon=True,
             args=(
-                song.id,
+                i,
                 q,
             ),
         ).start()
+
+    for song in songs:
         try:
             driver.get(song.shazamLink)
             time.sleep(2)
