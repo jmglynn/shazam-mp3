@@ -39,21 +39,21 @@ class Song:
             self._get_lyrics(soup)
 
     def _get_youtube_link(self, soup):
-        # try:
-        #     self.youtubeLink = soup.find("div", {"class": "video-container"})[
-        #         "data-href"
-        #     ]
-        # except Exception:
         try:
-            query = urllib.parse.quote(f"{self.artist} {self.title} audio")
-            response = requests.get(
-                "https://www.youtube.com/results?search_query=" + query
-            ).text
-            url_key = re.findall(r'\/watch\?v=([^:]+?)"', response)[0]
-            self.youtubeLink = "https://www.youtube.com/watch?v=" + url_key
+            self.youtubeLink = soup.find("div", {"class": "video-container"})[
+                "data-href"
+            ]
         except Exception:
-            print(f"NO YOUTUBE LINK FOR {self.id}. {self.artist} - {self.title}")
-            self.youtubeLink = None
+            try:
+                query = urllib.parse.quote(f"{self.artist} {self.title} audio")
+                response = requests.get(
+                    "https://www.youtube.com/results?search_query=" + query
+                ).text
+                url_key = re.findall(r'\/watch\?v=([^:]+?)"', response)[0]
+                self.youtubeLink = "https://www.youtube.com/watch?v=" + url_key
+            except Exception:
+                print(f"NO YOUTUBE LINK FOR {self.id}. {self.artist} - {self.title}")
+                self.youtubeLink = None
 
     def _get_album_art_link(self, soup):
         self.albumArtLink = None
@@ -62,7 +62,6 @@ class Song:
             "400x400", "800x800"
         )
         # for child in soup.find("div", {"class": "cover-art"}).descendants:
-        #     print(child)
         #     if child.name == "img":
         #         self.albumArtLink = child["src"].replace("400x400", "800x800")
 
@@ -91,7 +90,6 @@ class Song:
     def _get_lyrics(self, soup):
         try:
             lyrics = soup.find("p", {"class": "lyrics"}).text
-            print(lyrics)
             self.lyrics = lyrics
         except Exception:
             print(f"NO LYRICS FOR {self.id}. {self.artist} - {self.title}")
