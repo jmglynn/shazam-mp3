@@ -39,21 +39,21 @@ class Song:
             self._get_lyrics(soup)
 
     def _get_youtube_link(self, soup):
+        # try:
+        #     self.youtubeLink = soup.find("div", {"class": "video-container"})[
+        #         "data-href"
+        #     ]
+        # except Exception:
         try:
-            self.youtubeLink = soup.find("div", {"class": "video-container"})[
-                "data-href"
-            ]
+            query = urllib.parse.quote(f"{self.artist} {self.title} audio")
+            response = requests.get(
+                "https://www.youtube.com/results?search_query=" + query
+            ).text
+            url_key = re.findall(r'\/watch\?v=([^:]+?)"', response)[0]
+            self.youtubeLink = "https://www.youtube.com/watch?v=" + url_key
         except Exception:
-            try:
-                query = urllib.parse.quote(f"{self.artist} {self.title} audio")
-                response = requests.get(
-                    "https://www.youtube.com/results?search_query=" + query
-                ).text
-                url_key = re.findall(r'\/watch\?v=([^:]+?)"', response)[0]
-                self.youtubeLink = "https://www.youtube.com/watch?v=" + url_key
-            except Exception:
-                print(f"NO YOUTUBE LINK FOR {self.id}. {self.artist} - {self.title}")
-                self.youtubeLink = None
+            print(f"NO YOUTUBE LINK FOR {self.id}. {self.artist} - {self.title}")
+            self.youtubeLink = None
 
     def _get_album_art_link(self, soup):
         self.albumArtLink = None
