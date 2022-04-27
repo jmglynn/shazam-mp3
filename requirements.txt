@@ -1,5 +1,5 @@
 bs4
 eyed3
 requests
-youtube_dl
 selenium
+youtube_dl

@@ -8,9 +8,7 @@ import requests
 import threading
 import youtube_dl
 from queue import Queue
-from bs4 import BeautifulSoup
 from selenium import webdriver
-from itertools import dropwhile
 from selenium.webdriver.chrome.options import Options
 
 from song import Song
